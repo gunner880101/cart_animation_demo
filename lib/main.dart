@@ -1,5 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
-
+import 'package:cart_animation_demo/components/product_list_item.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -31,36 +30,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  GlobalKey fabKey = GlobalKey();
   final itemCount = 10;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: itemCount,
-        itemBuilder: ((context, index) => ListItem(index: index)),
+      body: Stack(
+        children: [
+          ListView.builder(
+            itemCount: itemCount,
+            itemBuilder: ((context, index) => ProductListItem(index: index)),
+          ),
+          const ProductListItem(index: 0),
+        ],
       ),
-    );
-  }
-}
-
-class ListItem extends StatefulWidget {
-  final int index;
-  const ListItem({super.key, required this.index});
-
-  @override
-  State<ListItem> createState() => _ListItemState();
-}
-
-class _ListItemState extends State<ListItem> {
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Image.asset(
-        'assets/images/apple.jpeg',
-        height: 150,
-        fit: BoxFit.fitHeight,
+      floatingActionButton: FloatingActionButton.large(
+        key: fabKey,
+        onPressed: (() => debugPrint('123')),
+        child: const Icon(Icons.shopping_basket),
       ),
-      title: Text('Apple ${widget.index}'),
     );
   }
 }
