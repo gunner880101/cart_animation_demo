@@ -1,9 +1,20 @@
-import 'package:cart_animation_demo/constants.dart';
+import 'package:cart_animation_demo/providers/widget_key_provider.dart';
+import 'package:cart_animation_demo/utils/path_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProductFloatingImage extends StatefulWidget {
-  final int index;
-  const ProductFloatingImage({super.key, required this.index});
+  final String imageName;
+  final Offset startPos;
+  final Offset endPos;
+  final double imageSize;
+  const ProductFloatingImage({
+    super.key,
+    required this.imageName,
+    required this.startPos,
+    required this.endPos,
+    required this.imageSize,
+  });
 
   @override
   State<ProductFloatingImage> createState() => _ProductFloatingImageState();
@@ -11,38 +22,59 @@ class ProductFloatingImage extends StatefulWidget {
 
 class _ProductFloatingImageState extends State<ProductFloatingImage>
     with TickerProviderStateMixin {
-  late double left;
-  late double top;
-  late double size;
+  late Path _path;
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-
-    left = 0;
-    top = 0;
-    size = 150;
+    _path = createTossAnimationPath(start: widget.startPos, end: widget.endPos);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    Animation animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ))
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          Provider.of<WidgetKeyProvider>(context, listen: false).endAnimation();
+        }
+      });
+    _controller.forward();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedPositioned(
-      left: left,
-      top: top,
-      duration: const Duration(seconds: 3),
-      child: GestureDetector(
-        onTap: () {},
-        child: Image.asset(
-          fruitImages[widget.index],
-          width: size,
-          fit: BoxFit.fitWidth,
-        ),
+    return Positioned(
+      left: calculatePos(_controller.value).dx,
+      top: calculatePos(_controller.value).dy,
+      child: Image.asset(
+        widget.imageName,
+        width: calculateSize(_controller.value),
+        fit: BoxFit.fitWidth,
       ),
     );
   }
+
+  Offset calculatePos(double value) {
+    final metrics = _path.computeMetrics();
+    final metric = metrics.elementAt(0);
+    final offset = value * metric.length;
+    return metric.getTangentForOffset(offset)!.position;
+  }
+
+  double calculateSize(double value) => _controller.value < 0.5
+      ? widget.imageSize
+      : widget.imageSize * (1.5 - _controller.value);
 }

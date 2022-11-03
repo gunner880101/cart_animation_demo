@@ -14,4 +14,4 @@ List<String> fruitTitles = [
   'peach',
 ];
 
-const imageWidth = 100;
+const imageWidth = 100.0;
