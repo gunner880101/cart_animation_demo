@@ -3,9 +3,17 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 
 class TossAnimationPainter extends CustomPainter {
-  final Animation<double> _animation;
+  final Animation<double> animation;
+  final bool? isAnimating;
+  final Offset? startPosition;
+  final Offset? endPosition;
 
-  TossAnimationPainter(this._animation) : super(repaint: _animation);
+  TossAnimationPainter({
+    required this.animation,
+    this.isAnimating,
+    this.startPosition,
+    this.endPosition,
+  }) : super(repaint: animation);
 
   Path _createAnyPath(Size size) {
     return Path()
@@ -26,23 +34,25 @@ class TossAnimationPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final animationPercent = _animation.value;
+    final animationPercent = animation.value;
 
-    final path = createAnimatedPath(_createAnyPath(size), animationPercent);
+    if (animationPercent == 0 || animationPercent == 1) return;
+
+    // final path = createAnimatedPath(_createAnyPath(size), animationPercent);
 
     final Paint paint = Paint();
     paint.color = Colors.amberAccent;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 1.0;
 
-    canvas.drawPath(path, paint);
+    // canvas.drawPath(path, paint);
 
     final metrics = _createAnyPath(size).computeMetrics();
     final metric = metrics.elementAt(0);
     final offset = animationPercent * metric.length;
     if (metric.getTangentForOffset(offset) == null) return;
     final pos = metric.getTangentForOffset(offset)!.position;
-    final radius = 20 * (1 - _animation.value);
+    final radius = 20 * (1 - animation.value);
     canvas.drawCircle(pos, radius, paint..color = Colors.blue);
     // loadImageAsset('assets/images/pic1.jpg')
     //     .then((image) => canvas.drawImage(image, pos, paint));

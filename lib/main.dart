@@ -1,3 +1,4 @@
+import 'package:cart_animation_demo/add_to_cart_animation/toss_animation_painter.dart';
 import 'package:cart_animation_demo/components/product_list_item.dart';
 import 'package:cart_animation_demo/providers/widget_key_provider.dart';
 import 'package:flutter/material.dart';
@@ -36,21 +37,48 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   GlobalKey fabKey = GlobalKey();
   final itemCount = 10;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
+  }
+
+  void _startAnimation() {
+    _animationController.stop();
+    _animationController.reset();
+    _animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
     Provider.of<WidgetKeyProvider>(context, listen: false).setFabKey(fabKey);
     return Scaffold(
-      body: ListView.builder(
-        itemCount: itemCount,
-        itemBuilder: ((context, index) => ProductListItem(index: index)),
+      body: CustomPaint(
+        foregroundPainter: TossAnimationPainter(
+          animation: _animationController,
+        ),
+        child: ListView.builder(
+          itemCount: itemCount,
+          itemBuilder: ((context, index) => ProductListItem(index: index)),
+        ),
       ),
       floatingActionButton: FloatingActionButton.large(
         key: fabKey,
-        onPressed: (() => debugPrint('123')),
+        onPressed: _startAnimation,
         child: const Icon(Icons.shopping_basket),
       ),
     );
