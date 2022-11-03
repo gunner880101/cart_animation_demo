@@ -13,3 +13,5 @@ List<String> fruitTitles = [
   'grape',
   'peach',
 ];
+
+const imageWidth = 100;

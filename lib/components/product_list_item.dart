@@ -16,8 +16,8 @@ class _ProductListItemState extends State<ProductListItem> {
       children: [
         Image.asset(
           fruitImages[widget.index % 5],
-          height: 100,
-          fit: BoxFit.fitHeight,
+          width: 100,
+          fit: BoxFit.fitWidth,
         ),
         Expanded(
           child: Text(
