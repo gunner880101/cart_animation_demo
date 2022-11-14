@@ -1,19 +1,19 @@
-import 'package:cart_animation_demo/providers/widget_key_provider.dart';
 import 'package:cart_animation_demo/utils/path_util.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ProductFloatingImage extends StatefulWidget {
   final String imageName;
   final Offset startPos;
   final Offset endPos;
   final double imageSize;
+  final Function onAnimationEnd;
   const ProductFloatingImage({
     super.key,
     required this.imageName,
     required this.startPos,
     required this.endPos,
     required this.imageSize,
+    required this.onAnimationEnd,
   });
 
   @override
@@ -42,7 +42,7 @@ class _ProductFloatingImageState extends State<ProductFloatingImage>
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Provider.of<WidgetKeyProvider>(context, listen: false).endAnimation();
+          widget.onAnimationEnd();
         }
       });
     _controller.forward();

@@ -1,6 +1,4 @@
-import 'package:cart_animation_demo/components/product_floating_image.dart';
 import 'package:cart_animation_demo/components/product_list_item.dart';
-import 'package:cart_animation_demo/constants.dart';
 import 'package:cart_animation_demo/providers/widget_key_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,39 +37,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   GlobalKey fabKey = GlobalKey();
   final itemCount = 10;
-
   @override
   Widget build(BuildContext context) {
     Provider.of<WidgetKeyProvider>(context, listen: false).setFabKey(fabKey);
     return Scaffold(
-      body: Stack(
-        children: [
-          ListView.builder(
-            itemCount: itemCount,
-            itemBuilder: ((context, index) => ProductListItem(index: index)),
-          ),
-          Consumer<WidgetKeyProvider>(
-            builder: (context, provider, _) {
-              if (!provider.isAnimating) {
-                return const SizedBox.shrink();
-              }
-              RenderBox renderBox = provider.fabKey.currentContext!
-                  .findRenderObject() as RenderBox;
-              Offset endPos = renderBox.localToGlobal(Offset.zero);
-              endPos +=
-                  Offset(renderBox.size.width / 2, renderBox.size.height / 2);
-              renderBox = provider.imageKey.currentContext!.findRenderObject()
-                  as RenderBox;
-              Offset startPos = renderBox.localToGlobal(Offset.zero);
-              return ProductFloatingImage(
-                imageName: provider.imageName,
-                startPos: startPos,
-                endPos: endPos,
-                imageSize: imageWidth,
-              );
-            },
-          ),
-        ],
+      body: ListView.builder(
+        itemCount: itemCount,
+        itemBuilder: ((context, index) => ProductListItem(
+              index: index,
+              fabKey: fabKey,
+            )),
       ),
       floatingActionButton: FloatingActionButton.large(
         key: fabKey,
