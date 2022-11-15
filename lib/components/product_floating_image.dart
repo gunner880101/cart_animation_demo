@@ -33,7 +33,7 @@ class _ProductFloatingImageState extends State<ProductFloatingImage>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    Animation animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+    Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
     ))
